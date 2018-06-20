@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements QuizRepository.Qu
             score = savedInstanceState.getInt(SCORE, 0);
         }
 
-
-        new QuizRepository(this).getRemoteQuiz(this);
+        int id = getIntent().getIntExtra("quiz_id", -1);
+        new QuizRepository(this).getRemoteQuiz(id,this);
 
     }
 

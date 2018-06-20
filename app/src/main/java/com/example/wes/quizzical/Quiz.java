@@ -5,24 +5,20 @@ import java.util.List;
 
 public class Quiz {
 
+    private String title;
+    private int id;
     private List<Question> questions = new ArrayList<>();
+
+    public String getTitle() {
+        return title;
+    }
+
+    public int getId() {
+        return id;
+    }
 
     public List<Question> getQuestions() {
         return questions;
     }
 
-    public void addQuestion(Question question) {
-        questions.add(question);
-    }
-
-    private static Quiz quiz;
-
-    public static Quiz getInstance() {
-        if (quiz == null) {
-            quiz = new Quiz();
-            quiz.addQuestion(new Question("The moon is made of cheese", false));
-            quiz.addQuestion(new Question("The sum of the internal angles of a triangle is 180", true));
-        }
-        return quiz;
-    }
 }
