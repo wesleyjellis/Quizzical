@@ -11,13 +11,18 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String USER_ANSWER = "user_answer";
     private static final String QUESTION_ANSWERED = "question_answered";
+    private static final String CURRENT_QUESTION_INDEX = "current_question_index";
 
     private Button trueButton;
     private Button falseButton;
     private TextView answerTextView;
+    private Button nextButton;
+    private TextView questionTextView;
 
     private boolean userAnswer; // What button the user clicked last (true or false)
     private boolean questionAnswered = false; // Has the question been answered?
+    private Quiz quiz;
+    private int currentQuestionIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
         trueButton = findViewById(R.id.true_button);
         falseButton = findViewById(R.id.false_button);
         answerTextView = findViewById(R.id.answer_text);
+        nextButton = findViewById(R.id.next_button);
+        questionTextView = findViewById(R.id.question);
 
         trueButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,25 +51,52 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextQuestion();
+            }
+        });
+
         if (savedInstanceState != null) { //no savedInstanceState when activity is first launched
             questionAnswered = savedInstanceState.getBoolean(QUESTION_ANSWERED, false);
-            userAnswer = savedInstanceState.getBoolean(USER_ANSWER);z
+            userAnswer = savedInstanceState.getBoolean(USER_ANSWER);
+            currentQuestionIndex = savedInstanceState.getInt(CURRENT_QUESTION_INDEX, 0);
         }
+
+
+        quiz = Quiz.getInstance();
+        showQuestion();
 
         if (questionAnswered) {
             checkAnswer(userAnswer);
         }
     }
 
+    private void nextQuestion() {
+        currentQuestionIndex = (currentQuestionIndex + 1) % quiz.getQuestions().size();
+        questionAnswered = false;
+        showQuestion();
+    }
+
+    private void showQuestion() {
+        Question question = quiz.getQuestions().get(currentQuestionIndex);
+        questionTextView.setText(question.getStatement());
+        answerTextView.setText("");
+        nextButton.setEnabled(false);
+    }
+
     private void checkAnswer(boolean answerToCheck) {
         questionAnswered = true;
         userAnswer = answerToCheck;
 
-        if(answerToCheck == false) {
+        if(answerToCheck == quiz.getQuestions().get(currentQuestionIndex).getAnswer()) {
             answerTextView.setText("Correct!");
         } else {
             answerTextView.setText("Nope, WRONG 👎");
         }
+
+        nextButton.setEnabled(true);
     }
 
     @Override
@@ -70,5 +104,6 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putBoolean(USER_ANSWER, userAnswer);
         outState.putBoolean(QUESTION_ANSWERED, questionAnswered);
+        outState.putInt(CURRENT_QUESTION_INDEX, currentQuestionIndex);
     }
 }
