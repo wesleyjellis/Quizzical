@@ -9,9 +9,15 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String USER_ANSWER = "user_answer";
+    private static final String QUESTION_ANSWERED = "question_answered";
+
     private Button trueButton;
     private Button falseButton;
     private TextView answerTextView;
+
+    private boolean userAnswer; // What button the user clicked last (true or false)
+    private boolean questionAnswered = false; // Has the question been answered?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d("HI", "true button clicked");
-                answerTextView.setText("Nope, WRONG 👎");
+                checkAnswer(true);
             }
         });
 
@@ -34,9 +40,35 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d("HI", "false button clicked");
-                answerTextView.setText("Correct!");
-
+                checkAnswer(false);
             }
         });
+
+        if (savedInstanceState != null) { //no savedInstanceState when activity is first launched
+            questionAnswered = savedInstanceState.getBoolean(QUESTION_ANSWERED, false);
+            userAnswer = savedInstanceState.getBoolean(USER_ANSWER);z
+        }
+
+        if (questionAnswered) {
+            checkAnswer(userAnswer);
+        }
+    }
+
+    private void checkAnswer(boolean answerToCheck) {
+        questionAnswered = true;
+        userAnswer = answerToCheck;
+
+        if(answerToCheck == false) {
+            answerTextView.setText("Correct!");
+        } else {
+            answerTextView.setText("Nope, WRONG 👎");
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(USER_ANSWER, userAnswer);
+        outState.putBoolean(QUESTION_ANSWERED, questionAnswered);
     }
 }
