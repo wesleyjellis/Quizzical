@@ -7,8 +7,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements QuizRepository.QuizCallback {
 
     private static final String USER_ANSWER = "user_answer";
     private static final String QUESTION_ANSWERED = "question_answered";
@@ -69,12 +70,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        quiz = new QuizRepository(this).getQuiz();
-        showQuestion();
+        new QuizRepository(this).getRemoteQuiz(this);
 
-        if (questionAnswered) {
-            checkAnswer(userAnswer);
-        }
     }
 
     private void nextQuestion() {
@@ -118,5 +115,20 @@ public class MainActivity extends AppCompatActivity {
         outState.putBoolean(QUESTION_ANSWERED, questionAnswered);
         outState.putInt(CURRENT_QUESTION_INDEX, currentQuestionIndex);
         outState.putInt(SCORE, score);
+    }
+
+    @Override
+    public void onFailure() {
+        Toast.makeText(this, "Unable to retrieve quiz", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onSuccess(Quiz quiz) {
+        this.quiz = quiz;
+        showQuestion();
+
+        if (questionAnswered) {
+            checkAnswer(userAnswer);
+        }
     }
 }
