@@ -1,5 +1,6 @@
 package com.example.wes.quizzical;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String USER_ANSWER = "user_answer";
     private static final String QUESTION_ANSWERED = "question_answered";
     private static final String CURRENT_QUESTION_INDEX = "current_question_index";
+    private static final String SCORE = "score";
 
     private Button trueButton;
     private Button falseButton;
@@ -23,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean questionAnswered = false; // Has the question been answered?
     private Quiz quiz;
     private int currentQuestionIndex = 0;
+    private int score = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             questionAnswered = savedInstanceState.getBoolean(QUESTION_ANSWERED, false);
             userAnswer = savedInstanceState.getBoolean(USER_ANSWER);
             currentQuestionIndex = savedInstanceState.getInt(CURRENT_QUESTION_INDEX, 0);
+            score = savedInstanceState.getInt(SCORE, 0);
         }
 
 
@@ -74,9 +78,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void nextQuestion() {
-        currentQuestionIndex = (currentQuestionIndex + 1) % quiz.getQuestions().size();
-        questionAnswered = false;
-        showQuestion();
+        currentQuestionIndex++;
+        if (currentQuestionIndex >= quiz.getQuestions().size()) {
+            Intent resultActivityIntent = new Intent(this, ResultActivity.class);
+            resultActivityIntent.putExtra(ResultActivity.KEY_SCORE, 0);
+            resultActivityIntent.putExtra(ResultActivity.KEY_TOTAL_QUESTIONS, quiz.getQuestions().size());
+            startActivity(resultActivityIntent);
+        } else {
+            questionAnswered = false;
+            showQuestion();
+        }
     }
 
     private void showQuestion() {
@@ -92,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
         if(answerToCheck == quiz.getQuestions().get(currentQuestionIndex).getAnswer()) {
             answerTextView.setText("Correct!");
+            score++;
         } else {
             answerTextView.setText("Nope, WRONG 👎");
         }
@@ -105,5 +117,6 @@ public class MainActivity extends AppCompatActivity {
         outState.putBoolean(USER_ANSWER, userAnswer);
         outState.putBoolean(QUESTION_ANSWERED, questionAnswered);
         outState.putInt(CURRENT_QUESTION_INDEX, currentQuestionIndex);
+        outState.putInt(SCORE, score);
     }
 }
