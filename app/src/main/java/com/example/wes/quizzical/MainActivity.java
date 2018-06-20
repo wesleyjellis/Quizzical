@@ -88,10 +88,16 @@ public class MainActivity extends AppCompatActivity implements QuizRepository.Qu
     }
 
     private void showQuestion() {
-        Question question = quiz.getQuestions().get(currentQuestionIndex);
-        questionTextView.setText(question.getStatement());
-        answerTextView.setText("");
-        nextButton.setEnabled(false);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Question question = quiz.getQuestions().get(currentQuestionIndex);
+                questionTextView.setText(question.getStatement());
+                answerTextView.setText("");
+                nextButton.setEnabled(false);
+            }
+        });
+
     }
 
     private void checkAnswer(boolean answerToCheck) {
