@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        quiz = Quiz.getInstance();
+        quiz = new QuizRepository(this).getQuiz();
         showQuestion();
 
         if (questionAnswered) {
